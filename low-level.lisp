@@ -12,7 +12,7 @@
 (defvar *spi*)
 (defvar *vcc* (make-array 8 :element-type 'float))
 
-(defmacro with-frame ((&optional (pin *frame-pin*)) &body body)
+(defmacro with-frame ((&optional (pin '*frame-pin*)) &body body)
   `(unwind-protect
         (progn (setf (gpio:value ,pin) T)
                ,@body)
