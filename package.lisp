@@ -5,7 +5,7 @@
 |#
 
 (in-package #:cl-user)
-(defpackage #:pi-plates-cffi
+(defpackage #:pi-plates-ffi
   (:nicknames #:org.shirakumo.pi-plates.lli)
   (:use #:cl)
   ;; low-level.lisp
