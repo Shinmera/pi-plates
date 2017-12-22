@@ -171,7 +171,7 @@
   (setf (aout plate 1) 0))
 
 (defun connect (&optional (spi "0.1"))
-  (setf *spi* (spidev:open spi))
+  (setf *spi* (cl-spidev-lli:open-spi spi))
   (gpio:export *frame-pin* *interrupt-pin*)
   (setf (gpio:direction *frame-pin*) :out)
   (setf (gpio:value *frame-pin*) 0)
@@ -183,5 +183,5 @@
       (setf (aref *vcc* plate) (ainv plate 8)))))
 
 (defun disconnect ()
-  (spidev:close *spi*)
+  (cl-spidev-lli:close-spi *spi*)
   (gpio:unexport *frame-pin* *interrupt-pin*))
