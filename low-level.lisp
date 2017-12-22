@@ -12,23 +12,31 @@
 (defvar *spi*)
 (defvar *vcc* (make-array 8 :element-type 'float))
 
-(defmacro with-frame ((&optional (pin '*frame-pin*)) &body body)
+(defmacro with-frame ((var &rest contents) &body body)
   `(unwind-protect
-        (progn (setf (gpio:value ,pin) T)
-               ,@body)
-     (setf (gpio:value ,pin) NIL)))
+        (let ((,var (cffi:make-shareable-byte-vector ,(length contents))))
+          ,@(loop for content in contents for i from 0
+                  collect `(setf (aref ,var ,i) ,content))
+          (setf (gpio:value *frame-pin*) T)
+          ,@body)
+     (setf (gpio:value *frame-pin*) NIL)))
 
 (defun address (plate)
   (+ *base-address* plate))
 
 (defun cmd (plate command &optional (p1 0) (p2 0) (bytes 0))
   (check-type plate (integer 0 8))
-  (with-frame ()
-    (spidev:write* *spi* (address plate) command p1 p2)
-    (when (< 0 bytes)
-      ;; Wtf?
-      (sleep 0.0001)
-      (spidev:read* bytes *spi*))))
+  (with-frame (frame (address plate) command p1 p2)
+    (cl-spidev-lli:transmit *spi* frame 300000 40 8)
+    (unwind-protect
+         (when (< 0 bytes)
+           ;; Wtf?
+           (sleep 0.0001)
+           (loop with frame = (make-array 1 :initial-element 0
+                                            :element-type '(unsigned-byte 8))
+                 for i from 0 to bytes
+                 collect (aref (cl-spidev-lli:transmit *spi* frame 500000 40 8) 0)))
+      (sleep 0.0003))))
 
 (defun cmd-int (plate command &optional (p1 0) (p2 0))
   (let ((response (cmd plate command p1 p2 size)))
@@ -164,7 +172,7 @@
 
 (defun connect (&optional (spi "0.1"))
   (setf *spi* (spidev:open spi))
-  (gpio:export-pin *frame-pin* *interrupt-pin*)
+  (gpio:export *frame-pin* *interrupt-pin*)
   (setf (gpio:direction *frame-pin*) :out)
   (setf (gpio:value *frame-pin*) 0)
   (setf (gpio:direction *interrupt-pin*) :in)
@@ -176,4 +184,4 @@
 
 (defun disconnect ()
   (spidev:close *spi*)
-  (gpio:unexport-pin *frame-pin* *interrupt-pin*))
+  (gpio:unexport *frame-pin* *interrupt-pin*))
