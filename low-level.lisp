@@ -6,6 +6,7 @@
 
 (in-package #:org.shirakumo.pi-plates.lli)
 
+(defvar *max-address* 8)
 (defvar *base-address* 8)
 (defvar *frame-pin* 25)
 (defvar *interrupt-pin* 22)
@@ -39,7 +40,7 @@
       (sleep 0.0003))))
 
 (defun cmd-int (plate command &optional (p1 0) (p2 0))
-  (let ((response (cmd plate command p1 p2 size)))
+  (let ((response (cmd plate command p1 p2 2)))
     (+ (* 256 (aref response 0))
        (aref response 1))))
 
@@ -69,7 +70,7 @@
 
 (defun find-plates ()
   (loop for i from 0 to *max-address*
-        when (= (try-address i) i)
+        when (= (try-plate i) i)
         collect i))
 
 (defun (setf interrupts) (value plate)
@@ -136,7 +137,7 @@
       (cmd plate #x60 led)
       (cmd plate #x61 led)))
 
-(defun toggle-led (value led)
+(defun toggle-led (plate led)
   (check-type led (integer 0 1))
   (cmd plate #x62 led))
 
@@ -150,7 +151,7 @@
     (:falling (cmd plate #x21 bit))
     (:rising (cmd plate #x22 bit))
     (:both (cmd plate #x23 bit))
-    (NIL (cmd plate #x24 bit))))
+    ((NIL) (cmd plate #x24 bit))))
 
 (defun ain (plate channel)
   (check-type channel (integer 0 8))
