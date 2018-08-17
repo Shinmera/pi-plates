@@ -10,7 +10,9 @@
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "A library to interface with Pi-Plates"
-  :homepage "https://github.com/Shinmera/pi-plates"
+  :homepage "https://Shinmera.github.io/pi-plates/"
+  :bug-tracker "https://github.com/Shinmera/pi-plates/issues"
+  :source-control (:git "https://github.com/Shinmera/pi-plates.git")
   :serial T
   :components ((:file "package")
                (:file "low-level")
