@@ -1,14 +1,8 @@
-#|
- This file is a part of pi-plates
- (c) 2016 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
- Author: Nicolas Hafner <shinmera@tymoon.eu>
-|#
-
 (asdf:defsystem pi-plates
   :version "1.0.0"
   :license "zlib"
-  :author "Nicolas Hafner <shinmera@tymoon.eu>"
-  :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
+  :author "Yukari Hafner <shinmera@tymoon.eu>"
+  :maintainer "Yukari Hafner <shinmera@tymoon.eu>"
   :description "A library to interface with Pi-Plates"
   :homepage "https://Shinmera.github.io/pi-plates/"
   :bug-tracker "https://github.com/Shinmera/pi-plates/issues"
